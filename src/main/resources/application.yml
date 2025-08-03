@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: volleynote
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/volleynote_dev?serverTimezone=Asia/Seoul
+    username: volleynote
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: update
