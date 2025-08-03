@@ -4,9 +4,10 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/volleynote_dev?serverTimezone=Asia/Seoul
-    username: volleynote
+    url: jdbc:mysql://localhost:3306/testdb?serverTimezone=Asia/Seoul
+    username: user
     password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
       hibernate:
