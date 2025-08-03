@@ -17,7 +17,6 @@ class UserEntity {
     @Column(unique = true, nullable = false, name = "email")
     var email: String = ""
 
-    // email must be unique.
     @Column(nullable = false, name = "nickname")
     var nickname: String = ""
 
