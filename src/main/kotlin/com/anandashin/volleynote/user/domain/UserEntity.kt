@@ -17,8 +17,8 @@ class UserEntity {
     var email: String = ""   // email must be unique.
     @Column(nullable = false, name = "nickname")
     var nickname: String = ""
-    @Column(nullable = false, name = "password")
-    var password: String = ""
+    @Column(nullable = false, name = "hashed_password")
+    var hashedPassword: String = ""
     @Column(name="introduction")
     var introduction: String? = null
 }
