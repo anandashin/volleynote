@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.4
+    image: mysql:latest
     container_name: volleynote-db
     ports:
       - "3306:3306"
@@ -12,7 +12,8 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: 1234
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db:/var/lib/mysql
 
 volumes:
-  mysql-data:
+  db:
+    driver: local
