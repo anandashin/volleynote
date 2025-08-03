@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
     kotlin("plugin.jpa") version "1.9.25"
+    kotlin("kapt") version "2.2.0"
 }
 
 group = "com.anandashin"
@@ -44,6 +45,42 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Query DSL
+    val querydslVersion = "5.1.0"
+    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("jakarta.persistence:jakarta.persistence-api")
+}
+
+val querydslDir =
+    layout.buildDirectory
+        .dir("generated/querydsl")
+        .get()
+        .asFile
+
+tasks.withType<JavaCompile>().configureEach {
+    options.generatedSourceOutputDirectory.set(querydslDir)
+}
+
+sourceSets {
+    getByName("main").java.srcDirs(
+        getByName("main").java.srcDirs + querydslDir,
+    )
+}
+
+tasks.named("clean") {
+    doLast {
+        if (querydslDir.exists()) {
+            querydslDir.deleteRecursively()
+        }
+    }
+}
+
+kapt {
+    correctErrorTypes = true
+    useBuildCache = true
 }
 
 kotlin {
@@ -60,4 +97,8 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named("runKtlintCheckOverMainSourceSet") {
+    dependsOn("compileJava")
 }
