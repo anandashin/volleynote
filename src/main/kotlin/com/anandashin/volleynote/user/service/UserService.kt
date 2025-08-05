@@ -1,14 +1,17 @@
 package com.anandashin.volleynote.user.service
 
+import com.anandashin.volleynote.user.AuthenticationException
 import com.anandashin.volleynote.user.LoginInvalidPasswordException
 import com.anandashin.volleynote.user.LoginUserNotFoundException
 import com.anandashin.volleynote.user.SignUpEmailConflictException
+import com.anandashin.volleynote.user.auth.JwtTokenProvider
 import com.anandashin.volleynote.user.domain.UserEntity
 import com.anandashin.volleynote.user.dto.SignInResponse
 import com.anandashin.volleynote.user.dto.UserDTO
 import com.anandashin.volleynote.user.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.mindrot.jbcrypt.BCrypt
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 interface UserService {
@@ -18,7 +21,8 @@ interface UserService {
         nickname: String,
         introduction: String?,
     ): String
-    fun login(email: String, password: String): UserDTO
+    fun login(email: String, password: String): Pair<UserDTO, String>
+    fun authenticateUser(accessToken: String): UserDTO
 }
 
 @Service
@@ -49,11 +53,19 @@ open class UserServiceImpl(
     }
 
     @Transactional
-    override fun login(email: String, password: String): UserDTO {
+    override fun login(email: String, password: String): Pair<UserDTO, String> {
         val user = userRepository.findByEmail(email) ?: throw LoginUserNotFoundException()
         if (BCrypt.checkpw(password, user.hashedPassword)) {
             throw LoginInvalidPasswordException()
         }
+        val accessToken = JwtTokenProvider.createJwtToken(user.id)
+        return Pair(UserDTO.from(user), accessToken)
+    }
+
+    @Transactional
+    override fun authenticateUser(accessToken: String): UserDTO {
+        val id = JwtTokenProvider.validateTokenAndGetUserId(accessToken) ?: throw AuthenticationException()
+        val user = userRepository.findByIdOrNull(id) ?: throw AuthenticationException()
         return UserDTO.from(user)
     }
 }

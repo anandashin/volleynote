@@ -1,11 +1,14 @@
 package com.anandashin.volleynote.user.api
 
+import com.anandashin.volleynote.user.auth.AuthUser
 import com.anandashin.volleynote.user.dto.SignInRequest
 import com.anandashin.volleynote.user.dto.SignInResponse
 import com.anandashin.volleynote.user.dto.SignUpRequest
+import com.anandashin.volleynote.user.dto.UserDTO
 import com.anandashin.volleynote.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,8 +37,15 @@ class UserController(
     fun login(
         @RequestBody request: SignInRequest,
     ) : ResponseEntity<SignInResponse> {
-        val user = userService.login(request.email, request.password)
-        return ResponseEntity.ok(SignInResponse(user.id))
+        val (user, accessToken) = userService.login(request.email, request.password)
+        return ResponseEntity.ok(SignInResponse(user.id, accessToken))
+    }
+
+    @GetMapping("/me")
+    fun me(
+        @AuthUser user: UserDTO,
+    ) : ResponseEntity<UserDTO> {
+        return ResponseEntity.ok(user)
     }
 
 }
