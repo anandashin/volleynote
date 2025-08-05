@@ -1,6 +1,7 @@
 package com.anandashin.volleynote.user
 
 import com.anandashin.volleynote.common.Exceptions
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 
 sealed class UserException(
@@ -10,4 +11,7 @@ sealed class UserException(
 ) : Exceptions(httpStatusCode, msg, cause) {
 }
 
-
+class SignUpEmailConflictException : UserException(
+    httpStatusCode = HttpStatus.CONFLICT,
+    msg = "Email already exists",
+)
