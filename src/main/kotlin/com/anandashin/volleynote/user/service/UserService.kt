@@ -8,29 +8,38 @@ import org.mindrot.jbcrypt.BCrypt
 import org.springframework.stereotype.Service
 
 interface UserService {
-    fun createUser(email: String, password: String, nickname: String, introduction: String?): String
+    fun createUser(
+        email: String,
+        password: String,
+        nickname: String,
+        introduction: String?,
+    ): String
 }
 
 @Service
 open class UserServiceImpl(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : UserService {
     @Transactional
     override fun createUser(
-        email: String, password: String, nickname: String, introduction: String?
+        email: String,
+        password: String,
+        nickname: String,
+        introduction: String?,
     ): String {
         if (userRepository.existsByEmail(email)) {
             throw SignUpEmailConflictException()
         }
         val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
-        val newUser = userRepository.save(
-            UserEntity(
-                email = email,
-                hashedPassword = hashedPassword,
-                nickname = nickname,
-                introduction = introduction
+        val newUser =
+            userRepository.save(
+                UserEntity(
+                    email = email,
+                    hashedPassword = hashedPassword,
+                    nickname = nickname,
+                    introduction = introduction,
+                ),
             )
-        )
         return "Success"
     }
 }

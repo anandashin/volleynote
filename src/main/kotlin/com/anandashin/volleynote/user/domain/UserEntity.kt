@@ -13,16 +13,12 @@ class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-
     @Column(unique = true, nullable = false, name = "email")
     var email: String = "",
-
     @Column(nullable = false, name = "nickname")
     var nickname: String = "",
-
     @Column(nullable = false, name = "hashed_password")
     var hashedPassword: String = "",
-
     @Column(name = "introduction")
     var introduction: String? = null,
 )

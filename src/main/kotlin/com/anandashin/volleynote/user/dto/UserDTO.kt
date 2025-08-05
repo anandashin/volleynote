@@ -8,14 +8,13 @@ data class UserDTO(
     val nickname: String,
     val introduction: String? = null,
 ) {
-    companion object{
-        fun from(entity: UserEntity): UserDTO {
-            return UserDTO(
+    companion object {
+        fun from(entity: UserEntity): UserDTO =
+            UserDTO(
                 id = entity.id,
                 email = entity.email,
                 nickname = entity.nickname,
                 introduction = entity.introduction,
             )
-        }
     }
 }

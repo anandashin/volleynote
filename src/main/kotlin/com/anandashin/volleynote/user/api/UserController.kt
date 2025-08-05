@@ -12,15 +12,19 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/user")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
 ) {
     @PostMapping("/signup")
     fun signup(
-        @Valid @RequestBody request: SignUpRequest
-    ) : ResponseEntity<String> {
-        val result = userService.createUser(
-            request.email, request.password, request.nickname, request.introduction
-        )
+        @Valid @RequestBody request: SignUpRequest,
+    ): ResponseEntity<String> {
+        val result =
+            userService.createUser(
+                request.email,
+                request.password,
+                request.nickname,
+                request.introduction,
+            )
         return ResponseEntity.ok(result)
     }
 }

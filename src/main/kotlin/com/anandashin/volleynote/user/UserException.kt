@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatusCode
 sealed class UserException(
     httpStatusCode: HttpStatusCode,
     msg: String,
-    cause: Throwable? = null
-) : Exceptions(httpStatusCode, msg, cause) {
-}
+    cause: Throwable? = null,
+) : Exceptions(httpStatusCode, msg, cause)
 
-class SignUpEmailConflictException : UserException(
-    httpStatusCode = HttpStatus.CONFLICT,
-    msg = "Email already exists",
-)
+class SignUpEmailConflictException :
+    UserException(
+        httpStatusCode = HttpStatus.CONFLICT,
+        msg = "Email already exists",
+    )
