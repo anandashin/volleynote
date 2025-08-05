@@ -15,3 +15,15 @@ class SignUpEmailConflictException :
         httpStatusCode = HttpStatus.CONFLICT,
         msg = "Email already exists",
     )
+
+class LoginInvalidPasswordException :
+    UserException(
+        httpStatusCode = HttpStatus.UNAUTHORIZED,
+        msg = "Invalid password",
+    )
+
+class LoginUserNotFoundException :
+    UserException(
+        httpStatusCode = HttpStatus.NOT_FOUND,
+        msg = "User not found",
+    )

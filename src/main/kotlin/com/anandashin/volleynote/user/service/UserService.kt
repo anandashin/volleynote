@@ -1,7 +1,11 @@
 package com.anandashin.volleynote.user.service
 
+import com.anandashin.volleynote.user.LoginInvalidPasswordException
+import com.anandashin.volleynote.user.LoginUserNotFoundException
 import com.anandashin.volleynote.user.SignUpEmailConflictException
 import com.anandashin.volleynote.user.domain.UserEntity
+import com.anandashin.volleynote.user.dto.SignInResponse
+import com.anandashin.volleynote.user.dto.UserDTO
 import com.anandashin.volleynote.user.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.mindrot.jbcrypt.BCrypt
@@ -14,6 +18,7 @@ interface UserService {
         nickname: String,
         introduction: String?,
     ): String
+    fun login(email: String, password: String): UserDTO
 }
 
 @Service
@@ -41,5 +46,14 @@ open class UserServiceImpl(
                 ),
             )
         return "Success"
+    }
+
+    @Transactional
+    override fun login(email: String, password: String): UserDTO {
+        val user = userRepository.findByEmail(email) ?: throw LoginUserNotFoundException()
+        if (BCrypt.checkpw(password, user.hashedPassword)) {
+            throw LoginInvalidPasswordException()
+        }
+        return UserDTO.from(user)
     }
 }

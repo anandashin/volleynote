@@ -1,5 +1,7 @@
 package com.anandashin.volleynote.user.api
 
+import com.anandashin.volleynote.user.dto.SignInRequest
+import com.anandashin.volleynote.user.dto.SignInResponse
 import com.anandashin.volleynote.user.dto.SignUpRequest
 import com.anandashin.volleynote.user.service.UserService
 import jakarta.validation.Valid
@@ -27,4 +29,13 @@ class UserController(
             )
         return ResponseEntity.ok(result)
     }
+
+    @PostMapping("/login")
+    fun login(
+        @RequestBody request: SignInRequest,
+    ) : ResponseEntity<SignInResponse> {
+        val user = userService.login(request.email, request.password)
+        return ResponseEntity.ok(SignInResponse(user.id))
+    }
+
 }
