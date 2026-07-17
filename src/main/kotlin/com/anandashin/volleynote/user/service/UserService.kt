@@ -55,7 +55,7 @@ open class UserServiceImpl(
     @Transactional
     override fun login(email: String, password: String): Pair<UserDTO, String> {
         val user = userRepository.findByEmail(email) ?: throw LoginUserNotFoundException()
-        if (BCrypt.checkpw(password, user.hashedPassword)) {
+        if (!BCrypt.checkpw(password, user.hashedPassword)) {
             throw LoginInvalidPasswordException()
         }
         val accessToken = JwtTokenProvider.createJwtToken(user.id)
