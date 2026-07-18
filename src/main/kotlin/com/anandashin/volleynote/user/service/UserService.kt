@@ -61,7 +61,7 @@ open class UserServiceImpl(
                 introduction = introduction,
             ),
         )
-        return "Success"
+        return "success"
     }
 
     @Transactional

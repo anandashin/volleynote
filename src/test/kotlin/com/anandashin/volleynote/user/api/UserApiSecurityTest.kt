@@ -4,6 +4,7 @@ import com.anandashin.volleynote.user.auth.JwtTokenProvider
 import com.anandashin.volleynote.user.domain.Role
 import com.anandashin.volleynote.user.domain.UserEntity
 import com.anandashin.volleynote.user.repository.UserRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.Optional
@@ -109,7 +111,7 @@ class UserApiSecurityTest {
     }
 
     @Test
-    fun `me PATCH는 유효 토큰과 정상 body면 200과 갱신된 UserDTO`() {
+    fun `me PATCH는 유효 토큰과 정상 body면 200과 success 반환 및 엔티티 갱신`() {
         val user = userEntity(id = 1L, nickname = "old", introduction = "old-intro", role = Role.USER)
         whenever(userRepository.findById(1L)).thenReturn(Optional.of(user))
         val token = JwtTokenProvider.createJwtToken(1L)
@@ -121,8 +123,11 @@ class UserApiSecurityTest {
                 .content("""{"nickname":"new","introduction":"new-intro"}"""),
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.nickname").value("new"))
-            .andExpect(jsonPath("$.introduction").value("new-intro"))
+            .andExpect(content().string("success"))
+
+        // 응답은 짧지만 실제 엔티티는 갱신되었는지 확인 (dirty checking으로 트랜잭션 커밋 시 반영)
+        assertThat(user.nickname).isEqualTo("new")
+        assertThat(user.introduction).isEqualTo("new-intro")
     }
 
     // --- /me DELETE ---
@@ -134,13 +139,14 @@ class UserApiSecurityTest {
     }
 
     @Test
-    fun `me DELETE는 유효 토큰이면 204 No Content 및 repo delete 호출`() {
+    fun `me DELETE는 유효 토큰이면 200과 성공 메시지 및 repo delete 호출`() {
         val user = userEntity(id = 1L, role = Role.USER)
         whenever(userRepository.findById(1L)).thenReturn(Optional.of(user))
         val token = JwtTokenProvider.createJwtToken(1L)
 
         mockMvc.perform(delete("/api/users/me").header("Authorization", "Bearer $token"))
-            .andExpect(status().isNoContent)
+            .andExpect(status().isOk)
+            .andExpect(content().string("Account deleted successfully"))
 
         verify(userRepository).delete(any<UserEntity>())
     }

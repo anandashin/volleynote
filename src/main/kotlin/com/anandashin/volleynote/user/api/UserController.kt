@@ -57,16 +57,17 @@ class UserController(
     fun updateMe(
         @AuthUser user: UserDTO,
         @Valid @RequestBody request: UpdateMeRequest,
-    ): ResponseEntity<UserDTO> {
-        return ResponseEntity.ok(userService.updateMe(user.id, request))
+    ): ResponseEntity<String> {
+        userService.updateMe(user.id, request)
+        return ResponseEntity.ok("success")
     }
 
     @DeleteMapping("/me")
     fun deleteMe(
         @AuthUser user: UserDTO,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<String> {
         userService.deleteMe(user.id)
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok("Account deleted successfully")
     }
 
     @GetMapping("/{userId}")

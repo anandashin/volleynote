@@ -23,13 +23,13 @@ class UserServiceImplTest {
     private val service: UserService = UserServiceImpl(userRepository)
 
     @Test
-    fun `createUser - 성공 시 Success 반환하고 저장 호출`() {
+    fun `createUser - 성공 시 success 반환하고 저장 호출`() {
         whenever(userRepository.existsByEmail("a@a.com")).thenReturn(false)
         whenever(userRepository.save(any<UserEntity>())).thenAnswer { it.arguments[0] }
 
         val result = service.createUser("a@a.com", "Abcd123!", "tester", null)
 
-        assertThat(result).isEqualTo("Success")
+        assertThat(result).isEqualTo("success")
         verify(userRepository).save(any<UserEntity>())
     }
 
