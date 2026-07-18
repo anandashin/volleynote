@@ -1,21 +1,26 @@
 package com.anandashin.volleynote.user.api
 
 import com.anandashin.volleynote.user.auth.AuthUser
+import com.anandashin.volleynote.user.dto.PublicUserDTO
 import com.anandashin.volleynote.user.dto.SignInRequest
 import com.anandashin.volleynote.user.dto.SignInResponse
 import com.anandashin.volleynote.user.dto.SignUpRequest
+import com.anandashin.volleynote.user.dto.UpdateMeRequest
 import com.anandashin.volleynote.user.dto.UserDTO
 import com.anandashin.volleynote.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 class UserController(
     private val userService: UserService,
 ) {
@@ -36,7 +41,7 @@ class UserController(
     @PostMapping("/login")
     fun login(
         @RequestBody request: SignInRequest,
-    ) : ResponseEntity<SignInResponse> {
+    ): ResponseEntity<SignInResponse> {
         val (user, accessToken) = userService.login(request.email, request.password)
         return ResponseEntity.ok(SignInResponse(user.id, accessToken))
     }
@@ -44,8 +49,30 @@ class UserController(
     @GetMapping("/me")
     fun me(
         @AuthUser user: UserDTO,
-    ) : ResponseEntity<UserDTO> {
+    ): ResponseEntity<UserDTO> {
         return ResponseEntity.ok(user)
     }
 
+    @PatchMapping("/me")
+    fun updateMe(
+        @AuthUser user: UserDTO,
+        @Valid @RequestBody request: UpdateMeRequest,
+    ): ResponseEntity<UserDTO> {
+        return ResponseEntity.ok(userService.updateMe(user.id, request))
+    }
+
+    @DeleteMapping("/me")
+    fun deleteMe(
+        @AuthUser user: UserDTO,
+    ): ResponseEntity<Void> {
+        userService.deleteMe(user.id)
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/{userId}")
+    fun getPublicProfile(
+        @PathVariable userId: Long,
+    ): ResponseEntity<PublicUserDTO> {
+        return ResponseEntity.ok(userService.getPublicProfile(userId))
+    }
 }

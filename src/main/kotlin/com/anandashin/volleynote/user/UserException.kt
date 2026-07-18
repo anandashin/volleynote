@@ -29,7 +29,13 @@ class LoginUserNotFoundException :
     )
 
 class AuthenticationException :
-        UserException(
-            httpStatusCode = HttpStatus.UNAUTHORIZED,
-            msg = "Authentication failed",
-        )
+    UserException(
+        httpStatusCode = HttpStatus.UNAUTHORIZED,
+        msg = "Authentication failed",
+    )
+
+class UserNotFoundException :
+    UserException(
+        httpStatusCode = HttpStatus.NOT_FOUND,
+        msg = "User not found",
+    )

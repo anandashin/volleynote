@@ -28,7 +28,7 @@ open class SecurityConfig(
             }
             .authorizeHttpRequests { authz ->
                 authz
-                    .requestMatchers(HttpMethod.POST, "/api/user/signup", "/api/user/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login").permitAll()
                     .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
