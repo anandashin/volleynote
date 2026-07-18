@@ -1,29 +1,39 @@
 package com.anandashin.volleynote.common
 
+import com.anandashin.volleynote.user.auth.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
-open class SecurityConfig {
+open class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
+) {
     @Bean
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { authz ->
-                // 관리자 전용 경로 스켈레톤 (현재 비활성).
-                // 활성화하려면 다음 중 하나가 선행돼야 함:
-                //   (1) JwtAuthenticationFilter를 도입해 요청 필터 단계에서
-                //       SecurityContext에 Authentication(role 포함)을 세팅, 그 뒤 hasRole 사용
-                //   (2) 또는 컨트롤러 레벨에서 @AuthAdmin 같은 커스텀 리졸버로 role 검증
-                // authz.requestMatchers("/api/admin/**").hasRole("ADMIN")
-                authz.anyRequest().permitAll()
+            .exceptionHandling {
+                it.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                it.accessDeniedHandler(jwtAccessDeniedHandler)
             }
+            .authorizeHttpRequests { authz ->
+                authz
+                    .requestMatchers(HttpMethod.POST, "/api/user/signup", "/api/user/login").permitAll()
+                    .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 }
