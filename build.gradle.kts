@@ -45,7 +45,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("com.h2database:h2")
 
     // Query DSL
     val querydslVersion = "5.1.0"
@@ -98,6 +100,10 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    environment(
+        "JWT_SECRET_KEY",
+        "test-secret-key-that-is-long-enough-for-hs256-min-32-bytes",
+    )
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
