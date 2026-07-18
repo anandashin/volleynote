@@ -2,6 +2,8 @@ package com.anandashin.volleynote.user.domain
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -21,4 +23,7 @@ class UserEntity(
     var hashedPassword: String = "",
     @Column(name = "introduction")
     var introduction: String? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "role", length = 20)
+    var role: Role = Role.USER,
 )
