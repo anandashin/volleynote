@@ -38,12 +38,29 @@ class UserApiSecurityTest {
     // --- signup / login (permitAll) ---
 
     @Test
-    fun `signup 경로는 익명 접근 허용 - permitAll 통과 후 validation 단계에서 400`() {
+    fun `signup 경로는 익명 접근 허용 - permitAll 통과 후 validation 단계에서 400 + INVALID_INPUT`() {
         mockMvc.perform(
             post("/api/users/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"),
         ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+            .andExpect(jsonPath("$.status").value(400))
+    }
+
+    @Test
+    fun `signup 이메일 중복 시 409 + EMAIL_ALREADY_EXISTS - BusinessException 흐름`() {
+        whenever(userRepository.existsByEmail("dup@a.com")).thenReturn(true)
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """{"email":"dup@a.com","password":"Abcd123!","nickname":"x"}""",
+                ),
+        ).andExpect(status().isConflict)
+            .andExpect(jsonPath("$.code").value("EMAIL_ALREADY_EXISTS"))
+            .andExpect(jsonPath("$.status").value(409))
     }
 
     // --- /me GET ---
@@ -52,6 +69,7 @@ class UserApiSecurityTest {
     fun `me GET은 토큰 없이 접근 시 401 - JwtAuthenticationEntryPoint의 JSON 응답`() {
         mockMvc.perform(get("/api/users/me"))
             .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.code").value("AUTH_REQUIRED"))
             .andExpect(jsonPath("$.status").value(401))
             .andExpect(jsonPath("$.message").exists())
     }
@@ -97,7 +115,7 @@ class UserApiSecurityTest {
     }
 
     @Test
-    fun `me PATCH는 nickname 길이 위반 시 400`() {
+    fun `me PATCH는 nickname 길이 위반 시 400 + INVALID_INPUT`() {
         val user = userEntity(id = 1L, role = Role.USER)
         whenever(userRepository.findById(1L)).thenReturn(Optional.of(user))
         val token = JwtTokenProvider.createJwtToken(1L)
@@ -108,6 +126,8 @@ class UserApiSecurityTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"nickname":"this-nickname-is-way-too-long-over-16"}"""),
         ).andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+            .andExpect(jsonPath("$.errors").isArray)
     }
 
     @Test
@@ -203,7 +223,7 @@ class UserApiSecurityTest {
     }
 
     @Test
-    fun `admin 경로는 USER 권한이면 403 - JwtAccessDeniedHandler`() {
+    fun `admin 경로는 USER 권한이면 403 + ACCESS_DENIED - JwtAccessDeniedHandler`() {
         val user = userEntity(id = 1L, role = Role.USER)
         whenever(userRepository.findById(1L)).thenReturn(Optional.of(user))
         val token = JwtTokenProvider.createJwtToken(1L)
@@ -212,6 +232,7 @@ class UserApiSecurityTest {
             get("/api/admin/anything").header("Authorization", "Bearer $token"),
         )
             .andExpect(status().isForbidden)
+            .andExpect(jsonPath("$.code").value("ACCESS_DENIED"))
             .andExpect(jsonPath("$.status").value(403))
     }
 
