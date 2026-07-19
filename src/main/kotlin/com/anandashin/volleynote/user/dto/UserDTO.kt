@@ -1,0 +1,23 @@
+package com.anandashin.volleynote.user.dto
+
+import com.anandashin.volleynote.user.domain.Role
+import com.anandashin.volleynote.user.domain.UserEntity
+
+data class UserDTO(
+    val id: Long,
+    val email: String,
+    val nickname: String,
+    val introduction: String? = null,
+    val role: Role,
+) {
+    companion object {
+        fun from(entity: UserEntity): UserDTO =
+            UserDTO(
+                id = entity.id,
+                email = entity.email,
+                nickname = entity.nickname,
+                introduction = entity.introduction,
+                role = entity.role,
+            )
+    }
+}

@@ -42,3 +42,6 @@ out/
 ### Docs (local design notes) ###
 docs/
 
+
+### env ###
+.env.local
