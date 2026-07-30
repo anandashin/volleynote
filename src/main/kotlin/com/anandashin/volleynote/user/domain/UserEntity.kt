@@ -1,5 +1,6 @@
 package com.anandashin.volleynote.user.domain
 
+import com.anandashin.volleynote.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -26,4 +27,4 @@ class UserEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "role", length = 20)
     var role: Role = Role.USER,
-)
+) : BaseEntity()

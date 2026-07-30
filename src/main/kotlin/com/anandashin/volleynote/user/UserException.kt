@@ -1,41 +1,14 @@
 package com.anandashin.volleynote.user
 
-import com.anandashin.volleynote.common.Exceptions
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
+import com.anandashin.volleynote.common.BusinessException
+import com.anandashin.volleynote.common.ErrorCode
 
-sealed class UserException(
-    httpStatusCode: HttpStatusCode,
-    msg: String,
-    cause: Throwable? = null,
-) : Exceptions(httpStatusCode, msg, cause)
+class SignUpEmailConflictException : BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS)
 
-class SignUpEmailConflictException :
-    UserException(
-        httpStatusCode = HttpStatus.CONFLICT,
-        msg = "Email already exists",
-    )
+class LoginInvalidPasswordException : BusinessException(ErrorCode.INVALID_PASSWORD)
 
-class LoginInvalidPasswordException :
-    UserException(
-        httpStatusCode = HttpStatus.UNAUTHORIZED,
-        msg = "Invalid password",
-    )
+class LoginUserNotFoundException : BusinessException(ErrorCode.LOGIN_USER_NOT_FOUND)
 
-class LoginUserNotFoundException :
-    UserException(
-        httpStatusCode = HttpStatus.NOT_FOUND,
-        msg = "User not found",
-    )
+class AuthenticationException : BusinessException(ErrorCode.AUTHENTICATION_REQUIRED)
 
-class AuthenticationException :
-    UserException(
-        httpStatusCode = HttpStatus.UNAUTHORIZED,
-        msg = "Authentication failed",
-    )
-
-class UserNotFoundException :
-    UserException(
-        httpStatusCode = HttpStatus.NOT_FOUND,
-        msg = "User not found",
-    )
+class UserNotFoundException : BusinessException(ErrorCode.USER_NOT_FOUND)

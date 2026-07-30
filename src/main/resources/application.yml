@@ -14,4 +14,8 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: update
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
 
