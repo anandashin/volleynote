@@ -124,6 +124,42 @@ class NoteApiSecurityTest {
             .andExpect(jsonPath("$.code").value("NOTE_ACCESS_DENIED"))
     }
 
+    // --- 좋아요 / 북마크 (인증 필수) ---
+
+    @Test
+    fun `좋아요는 토큰 없으면 401`() {
+        mockMvc
+            .perform(post("/api/notes/5/like"))
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `북마크는 토큰 없으면 401`() {
+        mockMvc
+            .perform(post("/api/notes/5/bookmark"))
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `내 북마크 목록은 토큰 없으면 401`() {
+        mockMvc
+            .perform(get("/api/notes/bookmarks"))
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `좋아요는 비공개 타인 노트면 403 + NOTE_ACCESS_DENIED`() {
+        authenticate(2L)
+        whenever(noteRepository.findByIdAndDeletedAtIsNull(5L))
+            .thenReturn(noteEntity(id = 5L, authorId = 1L, isPublic = false))
+        val token = JwtTokenProvider.createJwtToken(2L)
+
+        mockMvc
+            .perform(post("/api/notes/5/like").header("Authorization", "Bearer $token"))
+            .andExpect(status().isForbidden)
+            .andExpect(jsonPath("$.code").value("NOTE_ACCESS_DENIED"))
+    }
+
     // 인증 필터가 조회하는 사용자 stub (JwtAuthenticationFilter -> userRepository.findById)
     private fun authenticate(userId: Long) {
         whenever(userRepository.findById(userId)).thenReturn(
