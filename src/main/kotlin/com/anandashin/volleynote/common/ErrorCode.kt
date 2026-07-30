@@ -22,4 +22,8 @@ enum class ErrorCode(
     // Note
     NOTE_NOT_FOUND("NOTE_NOT_FOUND", "Note not found", HttpStatus.NOT_FOUND),
     NOTE_ACCESS_DENIED("NOTE_ACCESS_DENIED", "Note access denied", HttpStatus.FORBIDDEN),
+
+    // FIVB
+    TOURNAMENT_NOT_FOUND("TOURNAMENT_NOT_FOUND", "Tournament not found", HttpStatus.NOT_FOUND),
+    MATCH_NOT_FOUND("MATCH_NOT_FOUND", "Match not found", HttpStatus.NOT_FOUND),
 }
