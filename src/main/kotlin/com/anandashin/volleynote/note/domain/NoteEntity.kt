@@ -29,4 +29,6 @@ class NoteEntity(
     var awayTeam: String? = null,
     @Column(nullable = false, name = "is_public")
     var isPublic: Boolean = true,
+    @Column(nullable = false, name = "like_count")
+    var likeCount: Int = 0,
 ) : BaseEntity()

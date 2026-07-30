@@ -41,11 +41,20 @@ class NoteController(
         return ResponseEntity.ok(noteService.getMyNotes(user.id, pageable))
     }
 
-    @GetMapping
-    fun publicNotes(
+    @GetMapping("/bookmarks")
+    fun bookmarkedNotes(
+        @AuthUser user: UserDTO,
         pageable: Pageable,
     ): ResponseEntity<Page<NoteSummaryDTO>> {
-        return ResponseEntity.ok(noteService.getPublicNotes(pageable))
+        return ResponseEntity.ok(noteService.getBookmarkedNotes(user.id, pageable))
+    }
+
+    @GetMapping
+    fun publicNotes(
+        @AuthUser user: UserDTO,
+        pageable: Pageable,
+    ): ResponseEntity<Page<NoteSummaryDTO>> {
+        return ResponseEntity.ok(noteService.getPublicNotes(user.id, pageable))
     }
 
     @GetMapping("/{noteId}")
@@ -72,5 +81,37 @@ class NoteController(
     ): ResponseEntity<String> {
         noteService.deleteNote(noteId, user.id)
         return ResponseEntity.ok("Note deleted successfully")
+    }
+
+    @PostMapping("/{noteId}/like")
+    fun likeNote(
+        @AuthUser user: UserDTO,
+        @PathVariable noteId: Long,
+    ): ResponseEntity<NoteDTO> {
+        return ResponseEntity.ok(noteService.likeNote(noteId, user.id))
+    }
+
+    @DeleteMapping("/{noteId}/like")
+    fun unlikeNote(
+        @AuthUser user: UserDTO,
+        @PathVariable noteId: Long,
+    ): ResponseEntity<NoteDTO> {
+        return ResponseEntity.ok(noteService.unlikeNote(noteId, user.id))
+    }
+
+    @PostMapping("/{noteId}/bookmark")
+    fun bookmarkNote(
+        @AuthUser user: UserDTO,
+        @PathVariable noteId: Long,
+    ): ResponseEntity<NoteDTO> {
+        return ResponseEntity.ok(noteService.bookmarkNote(noteId, user.id))
+    }
+
+    @DeleteMapping("/{noteId}/bookmark")
+    fun unbookmarkNote(
+        @AuthUser user: UserDTO,
+        @PathVariable noteId: Long,
+    ): ResponseEntity<NoteDTO> {
+        return ResponseEntity.ok(noteService.unbookmarkNote(noteId, user.id))
     }
 }

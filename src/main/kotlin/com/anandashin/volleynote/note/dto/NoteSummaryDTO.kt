@@ -12,10 +12,17 @@ data class NoteSummaryDTO(
     val homeTeam: String?,
     val awayTeam: String?,
     val isPublic: Boolean,
+    val likeCount: Int,
+    val isLiked: Boolean,
+    val isBookmarked: Boolean,
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(entity: NoteEntity): NoteSummaryDTO =
+        fun from(
+            entity: NoteEntity,
+            isLiked: Boolean,
+            isBookmarked: Boolean,
+        ): NoteSummaryDTO =
             NoteSummaryDTO(
                 id = entity.id,
                 authorId = entity.authorId,
@@ -24,6 +31,9 @@ data class NoteSummaryDTO(
                 homeTeam = entity.homeTeam,
                 awayTeam = entity.awayTeam,
                 isPublic = entity.isPublic,
+                likeCount = entity.likeCount,
+                isLiked = isLiked,
+                isBookmarked = isBookmarked,
                 createdAt = entity.createdAt,
             )
     }
