@@ -18,4 +18,8 @@ enum class ErrorCode(
     EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email already exists", HttpStatus.CONFLICT),
     INVALID_PASSWORD("INVALID_PASSWORD", "Invalid password", HttpStatus.UNAUTHORIZED),
     LOGIN_USER_NOT_FOUND("LOGIN_USER_NOT_FOUND", "User not found", HttpStatus.NOT_FOUND),
+
+    // Note
+    NOTE_NOT_FOUND("NOTE_NOT_FOUND", "Note not found", HttpStatus.NOT_FOUND),
+    NOTE_ACCESS_DENIED("NOTE_ACCESS_DENIED", "Note access denied", HttpStatus.FORBIDDEN),
 }
