@@ -30,6 +30,8 @@ open class SecurityConfig(
                 authz
                     .requestMatchers(HttpMethod.POST, "/api/users/signup", "/api/users/login").permitAll()
                     .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
+                    // API 문서 (springdoc / Swagger UI)
+                    .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             }
