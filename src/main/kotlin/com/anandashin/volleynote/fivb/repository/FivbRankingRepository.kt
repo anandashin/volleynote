@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface FivbRankingRepository : JpaRepository<FivbRanking, Long> {
     fun findByTournamentNoOrderByPoolNoAscPositionAsc(tournamentNo: Long): List<FivbRanking>
+
+    fun findByFivbNo(fivbNo: Long): FivbRanking?
 }
