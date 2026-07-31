@@ -2,18 +2,19 @@ package com.anandashin.volleynote.fivb.domain
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import org.hibernate.annotations.Immutable
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-// FIVB 미러(Python 소유 / Spring 읽기 전용). schema §2.1
+// FIVB 미러(B안: Spring 소유·적재·읽기). schema §2.1
 @Entity
-@Immutable
 @Table(name = "fivb_tournament")
 class FivbTournament(
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     @Column(name = "fivb_no")
     val fivbNo: Long = 0,
